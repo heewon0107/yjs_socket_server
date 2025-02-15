@@ -5,20 +5,20 @@ const WebSocket = require("ws");
 const Y = require("yjs");
 
 const optionsUrl = process.env.OPTION_URL
-const port = process.env.PORT
+// const port = process.env.PORT
 // SSL 옵션 (Let's Encrypt 인증서)
-// const options = {
-//   key: fs.readFileSync(`${optionsUrl}privkey.pem`),
-//   cert: fs.readFileSync(`${optionsUrl}fullchain.pem`),
-// };
+const options = {
+  key: fs.readFileSync(`${optionsUrl}privkey.pem`),
+  cert: fs.readFileSync(`${optionsUrl}fullchain.pem`),
+};
 
 // HTTPS 서버 생성 (SSL 적용)
-// const httpsServer = https.createServer(options);
+const httpsServer = https.createServer(options);
 // const httpsServer = https.createServer();
 
 // 웹소켓 서버 생성 (HTTPS 서버를 기반으로 실행)
-// const wss = new WebSocket.Server({ server: httpsServer });
-const wss = new WebSocket.Server({ port });
+const wss = new WebSocket.Server({ server: httpsServer });
+// const wss = new WebSocket.Server({ port });
 
 // **Yjs 문서 저장소**
 const docs = new Map();
@@ -97,6 +97,6 @@ wss.on("connection", (socket) => {
 
 
 // HTTPS + WSS 서버 실행 
-// httpsServer.listen(port, () => {
+httpsServer.listen(port, () => {
   console.log("yjs pading server is running on");
-// });
+});
