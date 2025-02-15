@@ -1,0 +1,16 @@
+# node_modules 폴더는 버전 관리에서 제외
+node_modules/
+
+# 로그 파일 (선택 사항)
+logs/
+*.log
+
+# 운영체제 관련 파일 (예: macOS의 .DS_Store)
+.DS_Store
+
+# 환경변수 파일 (예: .env 파일은 보통 민감한 정보를 포함)
+.env
+
+# 기타 빌드 결과물 (필요에 따라 추가)
+dist/
+build/
