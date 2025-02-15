@@ -5,7 +5,7 @@ const WebSocket = require("ws");
 const Y = require("yjs");
 
 const optionsUrl = process.env.OPTION_URL
-// const port = process.env.PORT
+const port = process.env.PORT
 // SSL 옵션 (Let's Encrypt 인증서)
 const options = {
   key: fs.readFileSync(`${optionsUrl}privkey.pem`),
