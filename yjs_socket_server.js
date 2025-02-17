@@ -42,11 +42,15 @@ wss.on("connection", (socket) => {
           roomClients.get(room).add(socket);
 
           // Yjs 문서 동기화 처리
-          if (docs.has(room)) {
-            const doc = docs.get(room);
-            const fullStateUpdate = Y.encodeStateAsUpdate(doc);
-            socket.send(fullStateUpdate);
-          } else {
+          // if (docs.has(room)) {
+          //   const doc = docs.get(room);
+          //   const fullStateUpdate = Y.encodeStateAsUpdate(doc);
+          //   socket.send(fullStateUpdate);
+          // } else {
+          //   const doc = new Y.Doc();
+          //   docs.set(room, doc);
+          // }
+          if (!docs.has(room)) {
             const doc = new Y.Doc();
             docs.set(room, doc);
           }
