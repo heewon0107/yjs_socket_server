@@ -66,6 +66,7 @@ wss.on("connection", (socket) => {
           } else {
             const doc = new Y.Doc();
             docs.set(room, doc);
+            socket.send("new")
           }
 
           // 첫 문서일 때, 해당 문서 방 생성
