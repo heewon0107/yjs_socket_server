@@ -1,4 +1,4 @@
-require('dotenv').config(); // .env 파일의 내용을 process.env에 로드
+// require('dotenv').config(); // .env 파일의 내용을 process.env에 로드
 const fs = require("fs");
 const https = require("https");
 const WebSocket = require("ws");
@@ -6,6 +6,7 @@ const Y = require("yjs");
 
 const optionsUrl = process.env.OPTION_URL
 const port = process.env.PORT
+// const port = 4444
 // SSL 옵션 (Let's Encrypt 인증서)
 const options = {
   key: fs.readFileSync(`${optionsUrl}privkey.pem`),
@@ -21,8 +22,8 @@ const wss = new WebSocket.Server({ server: httpsServer });
 // const wss = new WebSocket.Server({ port });
 
 // **Yjs 문서 저장소**
-const docs = new Map();
-const roomClients = new Map();
+const docs = new Map(); // {room: doc}
+const roomClients = new Map(); // {room: [client...]}
 
 wss.on("connection", (socket) => {
   socket.on("message", (message) => {
@@ -85,7 +86,7 @@ wss.on("connection", (socket) => {
           const doc = docs.get(room);
           const update = Buffer.from(data.content.data);
           Y.applyUpdate(doc, update);
-          
+
           // 해당 방의 모든 클라이언트에게 브로드캐스트 (자신 제외)
           if (roomClients.has(room)) {
             roomClients.get(room).forEach((client) => {
@@ -123,5 +124,5 @@ wss.on("connection", (socket) => {
 
 // HTTPS + WSS 서버 실행 
 httpsServer.listen(port, () => {
-  console.log("yjs pading server is running on");
+console.log("yjs pading server is running on");
 });
