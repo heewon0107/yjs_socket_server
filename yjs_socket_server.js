@@ -29,8 +29,24 @@ wss.on("connection", (socket) => {
     try {
       const data = JSON.parse(message);
       if (data?.userName == undefined) return;
-
+      
       switch (data.type) {
+          // 서버 코드에 커서 위치 공유를 위한 case 추가
+          case "cursor-update": {
+            const room = data.room;
+            if (roomClients.has(room)) {
+              roomClients.get(room).forEach((client) => {
+                if (client !== socket && client.readyState === WebSocket.OPEN) {
+                  client.send(JSON.stringify({
+                    type: "cursor-update",
+                    userName: data.userName,
+                    position: data.position
+                  }));                
+                }
+              });
+            }
+            break;
+          }
         case "subscribe": {
           const room = data.topics?.[0];
           console.log(`📢 ${data.userName}님이 방에 구독: ${room}`);
@@ -42,14 +58,19 @@ wss.on("connection", (socket) => {
           roomClients.get(room).add(socket);
 
           // Yjs 문서 동기화 처리
-          // if (docs.has(room)) {
-          //   const doc = docs.get(room);
-          //   const fullStateUpdate = Y.encodeStateAsUpdate(doc);
-          //   socket.send(fullStateUpdate);
-          // } else {
-          //   const doc = new Y.Doc();
-          //   docs.set(room, doc);
-          // }
+          if (docs.has(room)) {
+            const doc = docs.get(room);
+            const fullStateUpdate = Y.encodeStateAsUpdate(doc);
+            if (fullStateUpdate) {
+              
+              socket.send(fullStateUpdate);
+            }
+          } else {
+            // 처음 yjs 통신
+            const doc = new Y.Doc();
+            docs.set(room, doc);
+            socket.send("new");
+          }
           if (!docs.has(room)) {
             const doc = new Y.Doc();
             docs.set(room, doc);
@@ -89,11 +110,11 @@ wss.on("connection", (socket) => {
       if (clientsSet.has(socket)) {
         clientsSet.delete(socket);
         // 필요시, 방에 연결된 클라이언트가 없으면 방 관련 자원도 정리
-        // if (clientsSet.size === 0) {
-        //   roomClients.delete(room);
-        //   docs.delete(room);
-        //   console.log(`빈 방 삭제: ${room}`);
-        // }
+        if (clientsSet.size === 0) {
+          roomClients.delete(room);
+          docs.delete(room);
+          console.log(`빈 방 삭제: ${room}`);
+        }
       }
     });
   });
